@@ -1,0 +1,75 @@
+﻿@model CalculatorApp.Models.CalculatorModel
+@{
+    ViewData["Title"] = "Calculator";
+}
+
+<h1 class="display-4">Calculator</h1>
+<p>Please fill in the details below for an estimate on how much money you might 'save' by going with private healthcare.</p>
+
+@using (Html.BeginForm("Calculate", "Home", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="selectedCondition">Condition Type</label>
+        @Html.DropDownListFor(m => m.selectedCondition, Model.ConditionSelectListItems, "Select a condition", new { @class = "form-control" })
+        <small id="conditionHelp" class="form-text text-muted">We'll never share this information with anyone.</small>
+    </div>
+
+    <div class="form-group" id="customValueDiv">
+        <label for="CustomValue">Custom Value</label>
+        @Html.TextBoxFor(m => m.CustomWaitTime, new { @id = "customValueBox", @type = "number", @step = "1", @disabled = "disabled", @class = "form-control" })
+        <small id="customValueHelp" class="form-text text-muted">Please enter a custom number of weeks you'll be waiting for your condition.</small>
+    </div>
+
+    <div class="form-group">
+        <label for="Income">Income</label>
+        @Html.TextBoxFor(m => m.Income, new { @class = "form-control", @type = "number", @step = "0.01" })
+        <small id="payHelp" class="form-text text-muted">Please enter how much money you earn per year. Again, we'll never share this with anyone.</small>
+        <br />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
+
+@if (Model != null && Model.Result1 != 0)
+{
+    <div>
+        <label>
+            Expected money made while waiting for NHS care: £@(Model.Result1.ToString("0.00")).
+        </label>
+        @if (Model.Result2 != 0)
+        {
+            <br />
+            <label>
+                Expected cost of private treatment: £@(Model.Result2.ToString("0.00")).
+            </label>
+        }
+    </div>
+}
+else
+{
+    <div>
+        <label>
+            Please enter some details for the calculation.
+        </label>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('selectedCondition').addEventListener('change', function () {
+            var customValueDiv = document.getElementById('customValueDiv');
+            var customValueBox = document.getElementById('customValueBox');
+            if (this.value == 1) { // '1' corresponds to the Custom option
+                customValueDiv.style.display = 'block';
+                customValueBox.disabled = false;
+            } else {
+                customValueDiv.style.display = 'none';
+                customValueBox.disabled = true;
+
+            }
+        });
+        if (document.getElementById('selectedConditon').textContent == "Custom Wait Time") {
+            customValueDiv.style.display = 'block';
+        }
+    </script>
+}
